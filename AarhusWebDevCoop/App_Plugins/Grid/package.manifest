@@ -1,0 +1,24 @@
+﻿{
+	"gridEditors": [
+    {
+      "name": "Subheading",
+      "alias": "mySubheading",
+      "view": "textstring",
+      "icon": "icon-grid",
+      "config": {
+        "style": "fontsize: 14px; font-weight: bold;",
+        "markup": "<p>#value#</p>"
+      }
+    },
+    {
+      "name": "Heading 2",
+      "alias": "heading2",
+      "view": "textstring",
+      "icon": "icon-grid",
+      "config": {
+        "style": "fontsize: 14px; font-weight: bold;",
+        "markup": "<h2>#value#</h2>"
+      }
+    }
+	]
+}

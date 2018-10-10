@@ -1,0 +1,26 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.ArticlesItem>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ Layout = "Master.cshtml"; }
+
+<article class="my-4 articles-projects">
+    
+    <!-- News Content -->
+    @Umbraco.Field("articleItemContent")
+    
+    <!-- News Footer with info about author -->
+    <footer class="container-fluid text-center bg-light py-4 my-4 border">
+        <p class="font-weight-bold mb-0">Posted:</p>
+        <p>@Model.Content.CreateDate.ToString("d MMM yyyy"), @Model.Content.CreateDate.ToString("HH:mm")</p>
+        
+        <p class="font-weight-bold mb-0">Author:</p> 
+        <p>@Umbraco.Field("articleAuthor") / <a href="@Umbraco.Field("articleReadMoreLink")">@Umbraco.Field("articleReadMoreTitle")</a></p>
+    </footer>
+</article>
+
+<!-- To the next or previous article -->
+<section class="container-fluid w-100 bg-light mb-0 py-4">
+    <article class="pb-0">
+        <h2 class="text-center">Hungry for more news?</h2>
+        <p class="text-center">Navigate to the next article or maybe go back to the previous.</p>
+        @Umbraco.RenderMacro("nextArticle")</article>
+</section>

@@ -1,0 +1,88 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.ProjectsItem>
+@using Umbraco.Web;
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ Layout = "Master.cshtml"; }
+
+@{
+    // VARIABLES that contains lists of the items in project managers and the project gallery
+    var projectManagersList = Model.Content.GetPropertyValue<IEnumerable<IPublishedContent>>("projectManagers");
+    var projectGallery = Model.Content.GetPropertyValue<IEnumerable<IPublishedContent>>("projectGallery");
+}
+
+<!-- Project Item Div -->
+<div class="container-fluid p-0">
+    <article class="my-4 articles-projects">
+        
+        <!-- Text of the Project -->
+        <div class="row">
+            
+            <!-- Project Description -->
+            <div class="col-sm-8 pr-4">
+                @Umbraco.Field("projectItemContent")
+            </div>
+            
+            <!-- Project Facts including posted date, status, project managers and link -->
+            <div class="col-sm-4">
+                <h2 class="project-facts-h2 pt-4 pt-sm-0">Project Facts</h2>
+                <dl>
+                    <dt>Posted</dt>
+                    <dd>@Model.Content.CreateDate.ToString("d MMM yyyy"), @Model.Content.CreateDate.ToString("HH:mm")</dd>
+                    
+                    <dt>Status</dt>
+                    <dd>@Umbraco.Field("status")</dd>
+                    
+                    <dt>Project Managers</dt>
+                    <dd>@foreach (var item in projectManagersList) {
+                        @item.Name<br/>
+                    }</dd>
+                    
+                    <dt>Read more</dt>
+                    <dd><a href="@Umbraco.Field("projectReadMoreLink")" target="_blank">@Umbraco.Field("projectReadMoreTitle")</a></dd>
+                </dl>            
+            </div>
+        </div>
+        
+        <!-- Project Gallery -->
+        <div class="row">
+            
+            <!-- If gallery exists -->
+            @if(projectGallery != null) {
+                foreach (var image in projectGallery) {
+                
+                    <!-- If only one image uploaded -->
+                    if(projectGallery.Count() == 1) {
+                        <div class="col-sm-6 offset-sm-3 p-2">
+                            <a href="@image.Url" target="_blank">
+                                <img src="@image.GetCropUrl(width: 500, height: 500)" alt="@image.Name">
+                            </a>
+                        </div>
+                        
+                    <!-- If only two images uploaded -->
+                    } else if (projectGallery.Count() == 2) {
+                        <div class="col-sm-6 p-2">
+                            <a href="@image.Url" target="_blank">
+                                <img src="@image.GetCropUrl(width: 500, height: 500)" alt="@image.Name">
+                            </a>
+                        </div>
+                        
+                    <!-- If more than one or two images uploaded -->
+                    } else {
+                        <div class="col-xl-4 col-sm-6 p-2">
+                            <a href="@image.Url" target="_blank">
+                                <img class="img-image" src="@image.GetCropUrl(width: 500, height: 500)" alt="@image.Name">
+                            </a>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </article>
+    
+    <!-- To the next or previous project -->
+    <section class="container-fluid w-100 bg-light mb-0 py-4">
+        <article class="pb-0">
+            <h2 class="text-center">Hungry for more projects?</h2>
+            <p class="text-center">Navigate to the next project or maybe go back to the previous.</p>
+            @Umbraco.RenderMacro("nextArticle")</article>
+    </section>
+</div>

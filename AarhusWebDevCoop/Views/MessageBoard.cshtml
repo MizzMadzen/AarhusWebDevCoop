@@ -1,0 +1,26 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.MessageBoard>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ Layout = "Master.cshtml"; }
+
+<article class="my-4">    
+    <section>
+        <!-- Description of the Message Board Page -->
+        <div class="container p-0">
+            @Umbraco.Field("messageBoardDescription")
+        </div>
+        
+        <!-- The Message Form (added with Child Action) -->
+        <h2>Write a message</h2>
+        @Html.Action("Index", "MessageFormSurface")
+    </section>
+    
+    <!-- Adding already sent messages -->
+    <section>
+        <h2>Messages</h2>
+        <p class="text-center">See newest messages</p>
+        <hr class="mx-3">
+        <div class="container p-0">
+            @Umbraco.RenderMacro("boardMessages")
+        </div>
+    </section>
+</article>

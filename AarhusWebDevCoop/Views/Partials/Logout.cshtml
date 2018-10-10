@@ -1,0 +1,35 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@using Umbraco.Web
+@using Umbraco.Web.Models
+@using Umbraco.Web.Controllers
+
+@{
+    // VARIABLES for the logoutModel
+    var loginStatusModel = Members.GetCurrentLoginStatus();
+    
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("/umbraco_client/ui/jquery.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.min.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.unobtrusive.min.js");
+    
+    var logoutModel = new PostRedirectModel();
+    logoutModel.RedirectUrl ="/";
+}
+@Html.RenderJsHere()
+
+<!-- If logged in show text and logout button -->
+@if (loginStatusModel.IsLoggedIn) {
+
+    <p>You are currently logged in as @loginStatusModel.Name</p>
+    
+    using(Html.BeginUmbracoForm<UmbLoginStatusController>("HandleLogout")) {
+        <fieldset>
+            <button class="border-0 bg-dark text-light py-1">Logout</button>
+        </fieldset>
+     
+        @Html.HiddenFor(m => logoutModel.RedirectUrl)
+    }
+}

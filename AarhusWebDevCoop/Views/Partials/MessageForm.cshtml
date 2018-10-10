@@ -1,0 +1,76 @@
+﻿@model AarhusWebDevCoop.ViewModels.MessageForm
+@using ClientDependency.Core.Mvc
+
+@{
+    // VARIABLES for member info
+    // Get info on the member logged in - Email is in the hidden Input field, so a comment will always be tracked to a user
+    // First and lastname is optional, you can change it if you want to
+    var member = Membership.GetUser();
+    var memberService = ApplicationContext.Current.Services.MemberService;
+    var memberInfo = memberService.GetByEmail(member.Email);
+    var memberFirstName = memberInfo.GetValue<string>("firstName");
+    var memberLastName = memberInfo.GetValue<string>("lastName");
+}
+
+<!-- If user hasn't sent anything yet -->
+@if (TempData["success"] == null) {
+
+    <!-- Beginning the Form -->
+    using (Html.BeginUmbracoForm("HandleFormSubmit", "MessageFormSurface", new object { }, new { @class = "form" })) {
+        <div class="container-fluid mt-3">
+        
+            <!-- NAME (already filled out with logged in user name but can be changed if wished) -->
+            <div class="form-group">
+                <div class="row justify-content-center">
+                    @Html.Label("Name", new { @class = "col-sm-2 form-control-label text-sm-right" })
+                    @Html.TextBoxFor(m => m.mesName, new { @Value = memberFirstName + " " + memberLastName, @class = "col-sm-7 form-control-input" })
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => m.mesName, "", new { @class = "col-sm-7 offset-sm-2 text-danger" })
+                </div>
+            </div>
+
+            <!-- EMAIL (Hidden so message can always be tracked to a member -->
+            <div class="form-group">
+                @Html.HiddenFor(m => m.mesEmail, new { @Value = member.Email, @readonly = "readonly", @class = "col-sm-7 form-control-input" })
+            </div>
+
+            <!-- TITLE -->
+            <div class="form-group">
+                <div class="row justify-content-center">
+                    @Html.Label("Title", new { @class = "col-sm-2 form-control-label text-sm-right" })
+                    @Html.TextBoxFor(m => m.mesTitle, new { @class = "col-sm-7 form-control-input", placeholder = "Subject" })
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => m.mesTitle, "", new { @class = "col-sm-7 offset-sm-2 text-danger" })
+                </div>
+            </div>
+
+            <!-- MESSAGE -->
+            <div class="form-group">
+                <div class="row justify-content-center">
+                    @Html.Label("Message", new { @class = "col-sm-2 form-control-label text-sm-right" })
+                    @Html.TextAreaFor(m => m.mesMessage, new { @class = "col-sm-7 form-control-input", rows = "7", placeholder = "Your Message" })
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => m.mesMessage, "", new { @class = "col-sm-7 offset-sm-2 text-danger" })
+                </div>
+            </div>
+            
+            <!-- BUTTON -->
+            <div class="row justify-content-center">
+                <button id="contact-submit" type="submit" class="col-sm-7 offset-sm-2 btn btn-primary">Send</button>
+            </div>
+            
+        </div> <!-- End of form -->
+    }
+    
+<!-- If user has sent message -->
+} else {
+
+    <!-- Success message -->
+    <div class="container-fluid p-0">
+        <p class="text-center font-weight-bold">Thank you for your message.</p>
+    </div>
+
+}

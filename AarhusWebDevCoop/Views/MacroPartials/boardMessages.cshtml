@@ -1,0 +1,28 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+// VARIABLE containing the messages added in the Message Board
+var boardMessages =
+    Model.Content.Site().FirstChild("messageBoard").Children()
+    .Where(x => x.IsVisible())
+    .OrderBy("CreateDate desc");
+}
+
+<!-- The Messages -->
+@foreach(var message in boardMessages) {
+    <div class="container p-4 my-4 bg-light border">
+        
+        <!-- The name of the user and the published date -->
+        <div class="text-secondary clearfix">
+            <p class="text-left float-left">By @message.GetPropertyValue("mName")</p>
+            <p class="text-right float-right">Published @message.CreateDate.ToString("d MMM yyyy") @Html.Raw("@") @message.CreateDate.ToString("HH:mm")</p>
+        </div>
+        
+        <!-- The title and content of the message -->
+        <div>
+            <h3>@message.GetPropertyValue("mTitle")</h3>
+            <p>@message.GetPropertyValue("mMessage")</p>
+        </div>
+    </div>
+    <hr class="mx-3">
+}

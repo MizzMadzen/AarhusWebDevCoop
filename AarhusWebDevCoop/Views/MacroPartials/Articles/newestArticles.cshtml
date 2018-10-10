@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+// VARIABLES containing the articles and different images
+var numOfArticles = Model.MacroParameters["numOfArticles"];
+var standardImageArticles = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImageArticles");
+var showStandardImageArticles = Model.Content.Site().GetPropertyValue<Boolean>("showStandardImageArticles");
+var standardImage = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImage");
+var newestArticles =
+    Model.Content.Site().FirstChild("articlesMain").Children()
+    .Where(x => x.IsVisible())
+    .OrderBy("CreateDate desc")
+    .Take(Convert.ToInt32(numOfArticles));
+}
+
+<div class="container-fluid m-0 p-0">
+     
+    @foreach (var article in newestArticles) {
+
+        <!-- Finding the main image of specific article -->    
+        var mainImage = article.GetPropertyValue<IPublishedContent>("articleItemMainImage");
+        var image = (mainImage != null) 
+                        ? mainImage 
+                        : showStandardImageArticles == true 
+                        ? standardImageArticles != null 
+                        ? standardImageArticles 
+                        : standardImage
+                        : standardImage;
+        
+        <!-- ARTICLE LIST -->
+        <div class="article-list row my-3">
+                    
+            <!-- ARTICLE IMAGE -->
+            <div class="col-md-4 bg-light p-0 articles-projects-list">
+                <a href="@article.Url"><img src="@image.Url" alt="@image.Name" /></a>
+            </div> <!-- end of column -->
+                
+            <!-- ARTICLE INFO (Title, Teaser, Read More) -->
+            <div class="col-md-8 bg-light py-2 articles-projects-info">
+                <h3><a href="@article.Url">@(article.GetPropertyValue<String>("articleItemTitle"))</a></h3>
+                <p class="m-0 mb-1 p-0 article-project-dates text-secondary">@article.CreateDate.ToString("d MMM yyyy"), @article.CreateDate.ToString("HH:mm")</p>
+                <p class="m-0 p-0">@Umbraco.Truncate(article.GetPropertyValue<String>("articleItemContent"), 150, true)</p>
+                <a href="@article.Url">Read more</a>
+            </div> <!-- end of column -->
+                
+        </div> <!-- end of row -->
+    }
+</div> <!-- end of container -->

@@ -1,0 +1,69 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.Members>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{ Layout = "Master.cshtml"; }
+
+@{
+    // VARIABLES that contains Member Objects
+    var memberservice = ApplicationContext.Current.Services.MemberService;
+    var activeMembers = memberservice.GetMembersByGroup("Active");
+    var prospectMembers = memberservice.GetMembersByGroup("Prospect");
+}
+
+<article class="my-4">
+    
+    <!-- Description of Member Page -->
+    @Umbraco.Field("memberPageDescription")
+    
+    <!-- The Member Lists -->
+    <div class="container-fluid p-0">
+        
+        <!-- Active Members List -->
+        <h2>Active Members</h2>
+        <div class="row">
+            @foreach(var member in activeMembers) {
+                    
+                @* Finding the member image sourcepath *@
+                string fullPath = member.GetValue("photo").ToString();
+                string[] substrings = fullPath.Split(',');
+                string srcString = substrings[2];
+                string[] srcSubStrings = srcString.Split(':');
+                string srcPath = srcSubStrings[1].Replace("\"", "");
+                srcPath = srcPath.Replace("}", "");
+                
+                <!-- The Member Card containing image, name, address, job title and  phone number of member -->
+                <div class="col-sm-6 col-md-4 mb-4">
+                    <div class="card">
+                      <img class="card-img-top" src="@srcPath" alt="@(member.GetValue("firstName") + "_" + member.GetValue("lastName"))">
+                      <div class="card-body">
+                        <h5 class="card-title">@(member.GetValue("firstName") + " " + member.GetValue("lastName"))</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@member.GetValue("memberJobTitle")</h6>
+                        <p class="card-text">@member.GetValue("address") <br>
+                                @(member.GetValue("zip") + " " + member.GetValue("city"))<br>
+                                Mobile: @member.GetValue("mobile")</p>
+                      </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- The Prospect Members List -->
+        <h2>Prospect Members</h2>
+        <div class="row">
+            @foreach(var member in prospectMembers) {
+            
+                <!-- The Member Card containing name, job title and  phone number of member -->
+                <div class="col-sm-6 col-md-4 mb-4">
+                    <div class="card">
+                        <img class="card-img-top" src="/media/1037/prospect_user.jpg">
+                        <div class="card-body">
+                            <h5 class="card-title">@(member.GetValue("firstName") + " " + member.GetValue("lastName"))</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@member.GetValue("memberJobTitle")</h6>
+                            <p class="card-text">Mobile: @member.GetValue("mobile")</p>
+                      </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+    </div> <!-- End of Member Lists -->
+</article>

@@ -1,0 +1,54 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@using Umbraco.Web
+@using Umbraco.Web.Models
+@using Umbraco.Web.Controllers
+
+@{
+    // VARIABLES for the loginModel
+    var loginModel = new LoginModel();
+    
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("/umbraco_client/ui/jquery.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.min.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.unobtrusive.min.js");
+}
+@Html.RenderJsHere()
+
+<!-- Beginning the form -->
+@using (Html.BeginUmbracoForm<UmbLoginController>("HandleLogin")) {
+
+    <div class="container-fluid mt-3">
+        @Html.ValidationSummary("loginModel", true)
+        
+        <!-- USERNAME -->
+        <div class="form-group">
+            <div class="row justify-content-center">
+                @Html.LabelFor(m => loginModel.Username, new { @class = "col-sm-2 form-control-label text-sm-right" })
+                @Html.TextBoxFor(m => loginModel.Username, new { @class = "col-sm-7 form-control-input", placeholder = "Your email" })
+            </div>
+            <div class="row justify-content-center">
+                @Html.ValidationMessageFor(m => loginModel.Username, "", new { @class = "col-sm-7 offset-sm-2 text-danger" })
+            </div>
+        </div>
+        
+        <!-- PASSWORD -->
+        <div class="form-group">
+            <div class="row justify-content-center">
+                @Html.LabelFor(m => loginModel.Password, new { @class = "col-sm-2 form-control-label text-sm-right" })
+                @Html.PasswordFor(m => loginModel.Password, new { @class = "col-sm-7 form-control-input", placeholder = "Password" })
+            </div>
+            <div class="row justify-content-center">
+                @Html.ValidationMessageFor(m => loginModel.Password, "", new { @class = "col-sm-7 offset-sm-2 text-danger" })
+            </div>
+        </div>
+        
+        <!-- BUTTON -->
+        <div class="row justify-content-center">
+            <button class="col-sm-7 offset-sm-2 btn btn-primary">Send</button>
+        </div>
+
+    </div><!-- End of form -->
+}

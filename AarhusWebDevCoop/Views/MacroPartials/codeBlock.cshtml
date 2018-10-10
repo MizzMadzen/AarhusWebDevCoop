@@ -1,0 +1,11 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+    // VARIABLE containing the content of the parameter
+    var writeText = Model.MacroParameters["writeText"];
+}
+
+<!-- Purpose: Special styled div to insert into a Rich Text Editor to e.g. create a codeblock -->
+<div class="container write-text pb-1 px-3 pt-3 my-2">
+    <p>@Html.Raw(writeText)</p>
+</div>

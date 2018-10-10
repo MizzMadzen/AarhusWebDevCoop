@@ -1,0 +1,53 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@using Umbraco.Web
+
+@{
+    // PURPOSE: To make the user able to move onto the next project or article without going back to the main page
+    
+    // The Previous Link
+    var previousLink = "";
+    var previousName = "";
+    var previousTitle = "";
+    
+    if(Model.Content.Previous() != null) {
+        previousLink = Model.Content.Previous().Url;
+        previousName = "< Previous";
+        if(Model.Content.DocumentTypeAlias == "projectsItem") {
+            previousTitle = Model.Content.Previous().GetPropertyValue<String>("projectItemTitle"); }
+        if(Model.Content.DocumentTypeAlias == "articlesItem") {
+            previousTitle = Model.Content.Previous().GetPropertyValue<String>("articleItemTitle"); }
+    }
+    
+    // The Next Link
+    var nextLink = "";
+    var nextName = "";
+    var nextTitle = "";
+    
+    if (Model.Content.Next() != null) {
+        nextLink = Model.Content.Next().Url;
+        nextName = "Next >";
+        if(Model.Content.DocumentTypeAlias == "projectsItem") {
+            nextTitle = Model.Content.Next().GetPropertyValue<String>("projectItemTitle"); }
+        if(Model.Content.DocumentTypeAlias == "articlesItem") {
+            nextTitle = Model.Content.Next().GetPropertyValue<String>("articleItemTitle"); }
+    }
+}
+
+<!-- The Links inserted at the page -->
+<div class="container pb-0">
+    <div class="next-previous row">
+        <div class="col-md-5 col-4 text-dark text-right">
+            @if(Model.Content.Previous() != null) {
+                <a href="@previousLink"><p>@previousName<br><span class="d-none d-md-block">@previousTitle</span></p></a>
+            } else { <p>You're looking at<br>the very oldest of its kind!</p> }
+        </div>
+        <div class="col-md-2 col-4 text-dark text-center">
+            <a href="@Model.Content.Up().Url">Back to @Model.Content.Up().Name</a>
+        </div>
+        <div class="col-md-5 col-4 text-dark text-left">
+            @if(Model.Content.Next() != null) {
+                <a href="@nextLink"><p>@nextName<br><span class="d-none d-md-block">@nextTitle</span></p></a>
+            } else { <p>You're looking at<br>the very latest of its kind!</p> }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+// VARIABLES containing project list and images
+var numOfProjects = Model.MacroParameters["numOfProjects"];
+var standardImageProjects = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImageProjects");
+var showStandardImageProjects = Model.Content.Site().GetPropertyValue<Boolean>("showStandardImageProjects");
+var standardImage = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImage");
+var completedProjects =
+        Model.Content.Site().FirstChild("projectsMain").Children()
+        .Where(x => x.IsVisible())
+        .Where(x => x.GetPropertyValue<String>("status")=="Completed")
+        .OrderBy("CreateDate desc")
+        .Take(Convert.ToInt32(numOfProjects));
+}
+
+<div class="container-fluid m-0 p-0">
+     
+    @foreach (var project in completedProjects) {
+            
+        <!-- Finding the main image and the status of specific project -->    
+        var mainImage = project.GetPropertyValue<IPublishedContent>("projectItemMainImage");
+        var image = mainImage != null 
+                    ? mainImage 
+                    : showStandardImageProjects == true 
+                    ? standardImageProjects != null 
+                    ? standardImageProjects 
+                    : standardImage
+                    : standardImage;
+
+        var statusOnProject = project.GetPropertyValue<String>("status");
+        var status = statusOnProject == "Completed"
+                    ? "bg-success"
+                    : statusOnProject == "Under development"
+                    ? "bg-warning"
+                    : statusOnProject == "Initiated"
+                    ? "bg-danger"
+                    : "bg-secondary";
+                
+        <!-- PROJECT LIST -->
+        <div class="row my-3 projects-bg bg-light">
+            <div class="col-md-4 p-0 articles-projects-list">
+                
+                <!-- STATUS LABEL -->
+                <p class="position-absolute p-2 label text-light m-0 rounded-0 @status">@project.GetPropertyValue("Status")</p>
+    
+                <!-- PROJECT IMAGE -->
+                <a href="@project.Url"><img src="@image.Url" alt="@image.Name" /></a>
+
+            </div> <!-- end of column -->
+        
+            <!-- PROJECT INFO (Title, Teaser, Read More) -->
+            <div class="col-md-8 py-2 articles-projects-info">
+            
+                <h3><a href="@project.Url">@(project.GetPropertyValue<String>("projectItemTitle"))</a></h3>
+                <p class="article-project-dates text-secondary">@project.CreateDate.ToString("d MMM yyyy"), @project.CreateDate.ToString("HH:mm")</p>
+                <p class="m-0">@Umbraco.Truncate(project.GetPropertyValue<String>("projectItemContent"), 140, true)</p>
+                <a href="@project.Url">Read more</a>
+                
+            </div> <!-- end of column -->
+        </div> <!-- end of row -->
+    }
+</div> <!-- end of container -->

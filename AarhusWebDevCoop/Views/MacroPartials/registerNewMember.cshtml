@@ -1,0 +1,123 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@using Umbraco.Web
+@using Umbraco.Web.Controllers
+
+@{
+    @*
+        You can specify a custom member type alias in the constructor, the default is 'Member'    
+        for example, to use 'Custom Member' you'd use this syntax:
+    
+        var registerModel = Members.CreateRegistrationModel("Custom Member");
+    *@
+    
+    var registerModel = Members.CreateRegistrationModel("prospect");
+    
+    @*
+        Configurable here:           
+    
+        registerModel.RedirectUrl       - Optional. What path to redirect to if registration is successful. 
+                                          By default the member will be redirected to the current umbraco page 
+                                          unless this is specified.
+    
+        registerModel.UsernameIsEmail   - the default is true
+                                          if you want the username to be different from the email
+                                          address, set this to true and add a new Username field in
+                                          the form below
+    
+                                          @Html.LabelFor(m => registerModel.Username)
+                                          @Html.TextBoxFor(m => registerModel.Username)
+                                          @Html.ValidationMessageFor(m => registerModel.Username)
+    *@
+  
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("/umbraco_client/ui/jquery.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.min.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.unobtrusive.min.js");
+    
+    var success = TempData["FormSuccess"] != null;
+}
+@Html.RenderJsHere()
+
+<!-- If registration was success the user is shown a Success page -->
+@if (success) { 
+    var m = Membership.GetUser();
+    var memberService = ApplicationContext.Current.Services.MemberService;
+    var member = memberService.GetByEmail(m.Email);
+
+    ApplicationContext.Current.Services.MemberService.AssignRole((int)m.ProviderUserKey, "Prospect");
+
+    <p>Registration succeeeded.</p>
+    <p>Logged in with @m.Email</p>
+
+<!-- If user hasn't clicked the button -->
+} else {
+
+    <!-- Beginning the form -->
+    using (Html.BeginUmbracoForm<UmbRegisterController>("HandleRegisterMember")) {
+        <fieldset class="container-fluid mt-3">
+            <legend><h2 class="text-center">Register Member</h2></legend>
+            @Html.ValidationSummary("registerModel", true)
+
+            <!-- NAME -->
+            <div class="form-group my-3">
+                <div class="row justify-content-center">
+                    @Html.LabelFor(m => registerModel.Name, new { @class = "col-sm-2 form-control-label text-sm-right" })
+                    @Html.TextBoxFor(m => registerModel.Name, new { @class = "col-sm-7 form-control-input", placeholder = "Name"})
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => registerModel.Name, "", new { @class = "col-sm-7 offset-sm-1 text-danger" })
+                </div>
+            </div>
+
+            <!-- EMAIL ADDRESS -->
+            <div class="form-group my-3">
+                <div class="row justify-content-center">
+                    @Html.LabelFor(m => registerModel.Email, new { @class = "col-sm-2 form-control-label text-sm-right"})
+                    @Html.TextBoxFor(m => registerModel.Email, new { @class = "col-sm-7 form-control-input", placeholder = "Email"})
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => registerModel.Email, "", new { @class = "col-sm-7 offset-sm-1 text-danger" })
+                </div>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="form-group my-3">
+                <div class="row justify-content-center">
+                    @Html.LabelFor(m => registerModel.Password, new { @class = "col-sm-2 form-control-label text-sm-right"})
+                    @Html.PasswordFor(m => registerModel.Password, new { @class = "col-sm-7 form-control-input", placeholder = "Password"})
+                </div>
+                <div class="row justify-content-center">
+                    @Html.ValidationMessageFor(m => registerModel.Password, "", new { @class = "col-sm-7 offset-sm-1 text-danger" })
+                </div>
+            </div>
+
+            <!-- OTHER NECESSARY INPUT FIELDS (here First and last name, phone number and jobtitle -->
+            @if (registerModel.MemberProperties != null) {
+
+                <!-- Going through the list of other input fields -->
+                for (var i = 0; i < registerModel.MemberProperties.Count; i++) {
+                    <div class="form-group my-3">
+                        <div class="row justify-content-center">
+                            @Html.LabelFor(m => registerModel.MemberProperties[i].Value, registerModel.MemberProperties[i].Name, new { @class = "col-sm-2 form-control-label text-sm-right"})
+                            @Html.EditorFor(m => registerModel.MemberProperties[i].Value, new { htmlAttributes = new { @class = "col-sm-7 form-control-input", placeholder = "Insert info here"} })
+                            @Html.HiddenFor(m => registerModel.MemberProperties[i].Alias)
+                        </div>
+                    </div>
+                }
+            }
+
+            @Html.HiddenFor(m => registerModel.MemberTypeAlias)
+            @Html.HiddenFor(m => registerModel.RedirectUrl)
+            @Html.HiddenFor(m => registerModel.UsernameIsEmail)
+            
+            <!-- BUTTON -->
+            <div class="row justify-content-center">
+                <button id="contact-submit" type="submit" class="col-sm-7 offset-sm-2 btn btn-primary">Register</button>
+            </div>
+        </fieldset>
+    }
+    
+}

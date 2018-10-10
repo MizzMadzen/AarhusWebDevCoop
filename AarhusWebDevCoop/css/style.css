@@ -1,0 +1,138 @@
+/* GENERAL STYLINGS */
+body, html { height: 100%; }
+html body { background-color: #eeeeee; }
+body {
+	min-height: 100vh;
+	display: flex; 
+  	flex-direction: column;
+	width: 100%;
+	margin: 0;
+}
+/* Link styles */
+a:link, a:visited, a:active { text-decoration: none; }
+a:hover { text-decoration: none!important; }
+.active-link {
+	border: 1px solid #ffffff;
+	border-radius: 0 !important;
+}
+main { flex: 1; }
+img { width: 100%; }
+
+/* MAIN MENU */
+/* Make sure that default Bootstrap color is not showing on dropdown in main menu */
+body .nav-pills .show > .nav-link {
+    background-color: #444444;
+}
+/* The logout text and button */
+.logout-text { font-size: 0.8em; }
+.logout-button {
+	border: none;
+	font-size: 0.8em;
+	background-color: transparent;
+}
+.logout-button:hover { cursor: pointer; }
+
+/* HEADER */
+header { position: relative; }
+.main-header {
+	height: 220px;
+	text-align: center;
+	overflow: hidden;	
+}
+.main-header img {
+	object-fit: cover;
+	object-position: 50% 50%;
+	height: 100%;
+	width: 100%;
+}
+.header-overlay {
+	opacity: 0.6;
+	z-index: 2;
+}
+.page-title {
+	position: absolute;
+	top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	z-index: 3;
+}
+.page-title h1 { font-size: 25px; }
+.page-title p { font-size: 17px; }
+
+/* Media Queries for header */
+@media only screen and (min-width: 720px) {
+	.main-header { height: 340px; }
+	.page-title h1 { font-size: 40px; }
+	.page-title p { font-size: 17px; }
+}
+@media only screen and (min-width: 960px) {
+	.main-header { height: 340px; }
+	.page-title h1 { font-size: 50px; }
+	.page-title p { font-size: 17px; }
+}
+
+/* ARTICLES AND SECTIONS */
+article {
+	width: 90%;
+	margin: 0 5%;
+}
+section{ margin-bottom: 3em; }
+section h2 { text-align: center; font-size: 1.6em; }
+
+/* Media Queries for articles and sections */
+@media only screen and (min-width: 992px) {
+	article {
+		width: 60%;
+		margin: 0 20%;
+	}
+}
+@media only screen and (min-width: 720px) {
+	section h2 { font-size: 2em; }
+}
+
+/* ABOUT US */
+.about-us .container { margin-bottom: 1em; }
+.about-us h1 { text-align: center; }
+.about-us h2 { margin-top: 0.5em; }
+
+/* NEWS AND PROJECTS */
+.articles-projects h2, .articles-projects h3 { margin-top: 1.2em; }
+.articles-projects h2 { font-size: 1.7em; }
+.articles-projects h3 { font-size: 1.4em; }
+.articles-projects .project-facts-h2 { margin-top: 0; }
+.articles-projects-info h3 { font-size: 1.5em; }
+.article-project-dates { font-size: 0.8em; }
+.articles-projects-list { overflow: hidden; }
+.articles-projects-list img {
+	object-fit: cover;
+	object-position: 50% 50%;
+	width: 100%;
+	height: 350px;
+}
+
+/* Media Queries for news and projects */
+@media only screen and (min-width: 720px) {
+	.articles-projects h2 { font-size: 2em; }
+	.articles-projects h3 { font-size: 1.8em; }
+	.articles-projects-list img { height: 220px; }
+}
+
+/* RTE FORMAT STYLES */
+.write-text {
+	font-family: "Courier New", Courier, monospace;
+	padding: 1em;
+	font-size: 0.8em;
+	color: #ffffff;
+	background-color: #333333;
+}
+.keyword {
+	padding: 0.4em;
+	font-size: 0.8em;
+	color: #ffffff;
+	background-color: #333333;
+}
+
+/* GRIDLAYOUT STYLES */
+.highlight-blue { background-color: blue; }
+.highlight-grey { background-color: #eeeeee; }
+.highlight-white { background-color: #ffffff; }

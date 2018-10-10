@@ -1,0 +1,25 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@using Umbraco.Web
+
+<!-- HEADER -->
+<header class="main-header container-fluid p-0">
+    
+    <!-- Image Overlay -->
+    <div class="header-overlay bg-dark h-100 w-100 position-absolute"></div>
+    
+    <!-- Main Image -->
+    @Umbraco.RenderMacro("findHeaderImages")
+    
+    <!-- Page Info -->
+    <div class="page-title m-0 p-0 text-uppercase text-light">
+        
+        <!-- If document type is projectItem or Article Item the parent name should be shown -->    
+        @if (Model.Content.DocumentTypeAlias == "projectsItem" || Model.Content.DocumentTypeAlias == "articlesItem") {
+            <a href="@Model.Content.Up().Url" class="p-0 m-0 text-light">@Model.Content.Up().Name</a>
+        }
+        
+        <!-- Title -->  
+        <h1 class="p-0 mt-2 mb-2">@(Model.Content.Name == "Home" ? "Aarhus Web Developer Consortium" : Model.Content.Name)</h1>
+    </div>
+    
+</header> <!-- end of container -->

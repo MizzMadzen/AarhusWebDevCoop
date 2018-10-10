@@ -1,0 +1,35 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+// VARIABLES containing Images and finding the right images
+var projectImage = Model.Content.GetPropertyValue<IPublishedContent>("projectItemMainImage"); 
+var articleImage = Model.Content.GetPropertyValue<IPublishedContent>("articleItemMainImage"); 
+var standardImage = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImage"); 
+var standardImageProjects = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImageProjects"); 
+var showStandardImageProjects = Model.Content.Site().GetPropertyValue<Boolean>("showStandardImageProjects"); 
+var standardImageNews = Model.Content.Site().GetPropertyValue<IPublishedContent>("standardImageArticles"); 
+var showStandardImageNews = Model.Content.Site().GetPropertyValue<Boolean>("showstandardImageArticles");
+var findProjectImage = projectImage != null 
+        ? projectImage 
+        : showStandardImageProjects == true 
+        ? standardImageProjects != null 
+        ? standardImageProjects 
+        : standardImage 
+        : standardImage;
+var findArticleImage = articleImage != null 
+        ? articleImage 
+        : showStandardImageNews == true 
+        ? standardImageNews != null 
+        ? standardImageNews 
+        : standardImage 
+        : standardImage;
+}
+
+<!-- Finding the header image to the document type respectively -->
+@if(Model.Content.DocumentTypeAlias == "projectsItem") {
+    <img class="justify-content-center" src="@findProjectImage.Url" alt="@findProjectImage.Name" >
+} else if(Model.Content.DocumentTypeAlias == "articlesItem") {
+    <img class="justify-content-center" src="@findArticleImage.Url" alt="@findArticleImage.Name">
+} else {
+    <img class="justify-content-center" src="@standardImage.Url" alt="@standardImage.Name" />
+}

@@ -1,0 +1,64 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+
+@{
+    // VARIABLE containing the images passed as parameter
+    var mediaIds = Model.MacroParameters["mediaIds"] as string;
+}
+
+@if (mediaIds != null) {
+
+    <!-- The Gallery -->
+    <div class="row">
+        @foreach (var mediaId in mediaIds.Split(',')) {
+
+            var media = Umbraco.TypedMedia(mediaId);
+
+            <!-- Choosing specific images -->
+            if (media.DocumentTypeAlias == "Image") {
+                if(@mediaIds.Split(',').Count() == 1) {
+                    @RenderOne(media as Image);
+                } else if(@mediaIds.Split(',').Count() == 2) {
+                    @RenderTwo(media as Image);
+                } else {
+                    @RenderMany(media as Image);
+                }
+            }
+
+            <!-- Choosing a folder with images -->
+            foreach (var image in media.Children<Image>()) {
+                if(@media.Children.Count() == 1) {
+                    @RenderOne(image);
+                } else if(@media.Children.Count() == 2) {
+                    @RenderTwo(image);
+                } else {
+                    @RenderMany(image);
+                }
+            }
+        }
+    </div>
+}
+
+<!-- Helpers to render the gallery depending on one, two or more images -->
+@helper RenderOne(Image item) {
+    <div class="col-sm-6 offset-sm-3 p-2">
+        <a href="@item.Url" target="_blank">
+            <img src="@item.GetCropUrl(height: 500, width: 500)" alt="@item.Name" />
+        </a>
+    </div>
+}
+
+@helper RenderTwo(Image item) {
+    <div class="col-sm-6 p-2">
+        <a href="@item.Url" target="_blank">
+            <img src="@item.GetCropUrl(height: 500, width: 500)" alt="@item.Name" />
+        </a>
+    </div>
+}
+
+@helper RenderMany(Image item) {
+    <div class="col-sm-6 col-xl-4 p-2">
+        <a href="@item.Url" target="_blank">
+            <img src="@item.GetCropUrl(height: 500, width: 500)" alt="@item.Name" />
+        </a>
+    </div>
+}

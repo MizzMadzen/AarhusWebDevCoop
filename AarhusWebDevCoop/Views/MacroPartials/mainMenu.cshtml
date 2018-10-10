@@ -1,0 +1,122 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@using Umbraco.Web
+@using System.Web.Mvc.Html
+@using ClientDependency.Core.Mvc
+@using Umbraco.Web.Models
+@using Umbraco.Web.Controllers
+
+@{
+    // VARIABLES containing menu list, project list and logo
+    var mainMenuList = Model.Content.Site().Children.Where(x => x.IsVisible()).ToArray();
+    var completedProjects =
+            Model.Content.Site().FirstChild("projectsMain").Children()
+            .Where(x => x.IsVisible())
+            .Where(x => x.GetPropertyValue<String>("status")=="Completed")
+            .OrderBy("CreateDate desc");
+    var logo = Model.Content.GetPropertyValue<IPublishedContent>("websiteLogo", true);
+    var showLogo = Model.Content.Site().GetPropertyValue<Boolean>("showLogo");
+    
+    // VARIABLES containing the logoutModel
+    var loginStatusModel = Members.GetCurrentLoginStatus();
+    
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+    Html.RequiresJs("/umbraco_client/ui/jquery.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.min.js");
+    Html.RequiresJs("/umbraco_client/Application/JQuery/jquery.validate.unobtrusive.min.js");
+    
+    var logoutModel = new PostRedirectModel();
+    logoutModel.RedirectUrl ="/";
+}
+
+@if (mainMenuList.Length > 0) {
+
+    <!-- The logo -->
+    <a class="navbar-brand" href="/">
+        @if(showLogo == true) {
+            if (logo != null) {
+                <img src="@logo.Url" alt="@logo.Name" style="width:60px;" />
+            }
+        }
+    </a>
+    
+    <!-- The navigation button responsive -->
+    <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <!-- MAIN MENU with the ability to show that currentpage item is active -->
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        
+        <!-- The left navbar (contains everything except register and login if access) -->
+        <div class="navbar-nav mr-auto">
+        
+            <!-- The Home link -->
+            <a class="nav-item nav-link text-light @(Model.Content.Name == Model.Content.Site().Name ? "active-link" : null)" href="/">@Model.Content.Site().Name</a>
+
+            <!-- The children links of home -->
+            @foreach (var item in mainMenuList) {
+        
+                <!-- If Member is not logged on or has no access the menu items shouldn't be shown -->
+                if(!Umbraco.MemberIsLoggedOn() && !Umbraco.MemberHasAccess(item.Id, item.Path)){
+            
+                } else if(Umbraco.MemberIsLoggedOn() && !Umbraco.MemberHasAccess(item.Id, item.Path)) {
+            
+                } else {
+                    <!-- If item is projects it should have the dropdown -->
+                    if(item.Name == "Projects") {
+                        <div class="dropdown">
+                            <!-- The Link to Dropdown -->
+                            <a class="nav-item nav-link dropdown-toggle text-light @(item.IsAncestorOrSelf(Model.Content) ? "active-link" : null)" data-toggle="dropdown" id="project-details-dropdown" href="#">Projects</a>
+                            
+                            <!-- The links in the Dropdown -->
+                            <div class="dropdown-menu rounded-0">
+                                <a class="dropdown-item" href="@item.Url">All @item.Name</a>
+                        
+                                <div class="dropdown-divider"></div>
+                        
+                                <h6 class="text-uppercase dropdown-item text-secondary">Completed projects</h6>
+                                @foreach(var project in completedProjects) {
+                                    <a class="dropdown-item" href="@project.Url">@project.Name</a>
+                                }
+                            </div>
+                        </div>
+                    
+                    <!-- If item is News news item should make News link active as well -->
+                    } else if(@item.Name == "News") {
+                        <a class="nav-item nav-link text-light @(item.IsAncestorOrSelf(Model.Content) ? "active-link" : null)" href="@item.Url">@item.Name</a>
+                    
+                    <!-- If any else they should be rendered like this -->
+                    } else {
+                        <a class="nav-item nav-link text-light @(item.Name == Model.Content.Name ? "active-link" : null)" href="@item.Url">@item.Name</a>
+                    }
+                }
+            }
+            
+        </div> <!-- End of left navbar -->
+
+        <!-- The right navbar (contains register and login if not logged in else logout button) -->
+        <div class="navbar-nav ml-auto">
+            
+            <!-- If logged in show logout button -->
+            @if (loginStatusModel.IsLoggedIn) {
+                using(Html.BeginUmbracoForm<UmbLoginStatusController>("HandleLogout")) {
+            
+                    <fieldset class="text-center text-light container-fluid p-0 bg-dark">
+                        <span class="logout-text p-0">@loginStatusModel.Name &nbsp;&nbsp; /</span>
+                        <button class="text-light logout-button py-1">Logout</button>
+                    </fieldset>
+     
+                    @Html.HiddenFor(m => logoutModel.RedirectUrl) }
+            
+            <!-- If not logged in show register and login links -->
+            } else {
+                var loginPage = Model.Content.Site().FirstChild(x => x.Name == "Login");
+                var registerPage = Model.Content.Site().FirstChild(x => x.Name == "Register");
+            
+                <a class="nav-item nav-link text-light @(loginPage.Name == Model.Content.Name ? "active-link" : null)" href="@loginPage.Url">@loginPage.Name</a>
+                <a class="nav-item nav-link text-light @(registerPage.Name == Model.Content.Name ? "active-link" : null)" href="@registerPage.Url">@registerPage.Name</a>
+            }
+        </div> <!-- End of right navbar -->
+    </div> <!-- End of MAIN MENU -->
+}
